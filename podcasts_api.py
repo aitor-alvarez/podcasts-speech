@@ -5,9 +5,9 @@ import pandas as pd
 
 class Podcast:
 
-	def __init__(self, keywords, country):
+	def __init__(self, keywords, country, language):
 		self.keywords = keywords
-		self.language = 'ru'
+		self.language = language
 		self.country = country
 		self.base_url = 'https://itunes.apple.com/search?term='
 
@@ -35,7 +35,7 @@ class Podcast:
 		collection_url=[]
 		url=[]
 		primaryGenre=[]
-		col_names=['name', 'creator', 'creator_url', 'collection', 'collection_url', 'url', 'primaryGenre']
+		col_names=['name', 'url', 'primaryGenre', 'creator', 'creator_url', 'collection', 'creator_url']
 
 		for term in self.keywords:
 			data = self.get_podcast_data(term)
@@ -52,7 +52,7 @@ class Podcast:
 				sleep(2)
 				continue
 
-			df = pd.DataFrame([name, url, primaryGenre, creator, creator_url, collection, creator_url, ])
+			df = pd.DataFrame([name, url, primaryGenre, creator, creator_url, collection, creator_url ])
 			df.columns = col_names
 
 			return df
