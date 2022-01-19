@@ -51,7 +51,7 @@ class Podcast:
 				pass
 			sleep(3)
 
-		df = pd.DataFrame({'name':name, 'url':url, 'primaryGenre':primaryGenre, 'creator':creator, 'collection':collection})
+		df = pd.DataFrame({'name':name, 'url':url, 'primaryGenre':primaryGenre, 'creator':creator, 'collection':collection, 'collection url': collection_url})
 
 		return df
 
