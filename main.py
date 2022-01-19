@@ -15,14 +15,14 @@ def main():
 	                    help='language as a string')
 
 	parser.add_argument('-o', '--output_path', type=str, default=None,
-	                    help='Text file used as a reference to be compared against')
+	                    help='Output Excel file path + filename')
 
 	args = parser.parse_args()
 	keywords = pd.read_excel(args.keywords, engine='openpyxl')
 	keywords = keywords['tokens'].tolist()
 	pod = Podcast(keywords, args.country, args.language)
 	dataset = pod.create_dataset()
-	dataset.to_excel(args.output_path)
+	dataset.to_excel(args.output_path, engine='openpyxl')
 
 
 if __name__ == '__main__':
