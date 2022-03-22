@@ -1,4 +1,5 @@
 venv/
+creds/
 .idea/
 *.json
 *.txt
@@ -6,3 +7,4 @@ venv/
 *settings.py
 *.pyc
 *.sqlite3
+settings.py
