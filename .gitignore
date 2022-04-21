@@ -8,3 +8,5 @@ creds/
 *.pyc
 *.sqlite3
 settings.py
+transcripts/
+audio/
