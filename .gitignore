@@ -11,3 +11,5 @@ settings.py
 transcripts/
 audio/
 .DS_Store
+*.xlsx
+*.csv
