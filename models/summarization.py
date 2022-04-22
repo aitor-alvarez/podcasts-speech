@@ -1,9 +1,7 @@
 from transformers.pipelines import pipeline
 
 
-def summarize_text(text_file):
+def summarize_text(txt):
 	summary = pipeline("summarization")
-	f = open(text_file, "r", encoding="latin1")
-	txt = f.readlines()
-	summarized = summary(txt, min_length=65, max_length=150)
+	summarized = summary(txt, min_length=20, max_length=80)
 	return summarized

@@ -5,6 +5,7 @@ import settings
 import datetime
 import os
 import pandas as pd
+from pydub import AudioSegment
 
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= getattr(settings, "GCLOUD_CREDS", None)
@@ -16,6 +17,7 @@ def process_speech_to_txt(path, lang):
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
 		language_code=lang,
+		enable_automatic_punctuation=True,
 		enable_word_time_offsets=True,
 		audio_channel_count=2,
 	)
@@ -35,7 +37,7 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 			blob.upload_from_filename(full_file_path)
 			return url, blob
 		except:
-			return "File was not uploaded. There seems to be a problem with your file."
+			print("File was not uploaded. There seems to be a problem with your file.")
 	else:
 		bucket = storage_client.create_bucket(bucket_name)
 		print("Bucket {} created.".format(bucket.name))
@@ -45,10 +47,10 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 			blob.upload_from_filename(full_file_path)
 			return url, blob
 		except:
-			return "File was not uploaded. There seems to be a problem with your file."
+			print("File was not uploaded. There seems to be a problem with your file.")
 
 
-def generate_transcriptions(speech_txt_response, bin=10):
+def generate_transcriptions(speech_txt_response, bin=60):
 	start=[]
 	end=[]
 	transcriptions=[]
@@ -78,7 +80,7 @@ def generate_transcriptions(speech_txt_response, bin=10):
 					word_end_sec = result.alternatives[0].words[i + 1].end_time.seconds
 
 					if word_end_sec < end_sec:
-						transcript = transcript + " " + word
+						transcript = transcript + " " + word + " "
 					else:
 						previous_word_end_sec = result.alternatives[0].words[i].end_time.seconds
 
@@ -136,3 +138,12 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
     # Get the translation from the response
     for translation in response.translations:
         return format(translation.translated_text)
+
+
+def mp3_to_flac(dir):
+	for d in os.listdir(dir):
+		if d.endswith('.mp3'):
+			audio = AudioSegment.from_mp3(dir+d)
+			audio.export(dir+d.replace('.mp3', '.flac'),format = "flac")
+			os.remove(dir+d)
+	return None
