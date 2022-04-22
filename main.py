@@ -29,7 +29,7 @@ def main():
 		dataset = pod.create_dataset()
 		dataset.to_excel(args.output_path, engine='openpyxl')
 	elif args.audio_dir:
-		sm.process_summaries(args.audio_dir)
+		sm.process_transcripts(args.audio_dir)
 
 
 

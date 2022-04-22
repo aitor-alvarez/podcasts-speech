@@ -34,7 +34,7 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 		bucket = storage_client.bucket(bucket_name)
 		blob = bucket.blob(audio_file)
 		try:
-			blob.upload_from_filename(full_file_path)
+			blob.upload_from_filename(full_file_path+audio_file)
 			return url, blob
 		except:
 			print("File was not uploaded. There seems to be a problem with your file.")
@@ -44,7 +44,7 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 		bucket = storage_client.bucket(bucket_name)
 		blob = bucket.blob(audio_file)
 		try:
-			blob.upload_from_filename(full_file_path)
+			blob.upload_from_filename(full_file_path+audio_file)
 			return url, blob
 		except:
 			print("File was not uploaded. There seems to be a problem with your file.")
