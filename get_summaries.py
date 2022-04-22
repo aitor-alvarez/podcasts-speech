@@ -25,3 +25,18 @@ def process_transcripts(directory, lang='ru-RU'):
 				for trans in translations:
 					f.write(trans + "\n")
 			print("transcripts completed")
+
+
+def create_summaries(transcripts_dir):
+	for t in os.listdir(transcripts_dir):
+		summaries = []
+		if t.endswith('.txt'):
+			with open(transcripts_dir+t) as f:
+				lines = f.readlines()
+				lines.pop(0)
+				for l in lines:
+					suma = summarize_text(l)
+					summaries.append(suma)
+			with open('summaries/'+t.replace('_translation.txt', '_summary.txt'), 'w') as fi:
+				for s in summaries:
+					fi.write(s[0]['summary_text'] + "\n")

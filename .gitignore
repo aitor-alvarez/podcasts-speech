@@ -10,3 +10,4 @@ creds/
 settings.py
 transcripts/
 audio/
+.DS_Store
