@@ -21,6 +21,12 @@ def main():
 	parser.add_argument('-a', '--audio_dir', type=str, default=None,
 	                    help='Audio directory to obtain summaries and topics')
 
+	parser.add_argument('-t', '--txt_file', type=str, default=None,
+	                    help='Excel file with transcript data')
+
+	parser.add_argument('-s', '--summary_file', type=str, default=None,
+	                    help='Excel file with text for summarization')
+
 	args = parser.parse_args()
 	if args.keywords:
 		keywords = pd.read_excel(args.keywords, engine='openpyxl')
@@ -30,9 +36,11 @@ def main():
 		dataset.to_excel(args.output_path, engine='openpyxl')
 	elif args.audio_dir:
 		sm.process_transcripts(args.audio_dir)
-
-
-
+		sm.create_summaries('transcripts/')
+	elif args.txt_file:
+		sm.get_txt_translations(args.txt_file)
+	elif args.summary_file:
+		sm.get_txt_summaries(args.summary_file)
 
 if __name__ == '__main__':
 	main()
