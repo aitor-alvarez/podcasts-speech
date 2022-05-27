@@ -19,7 +19,7 @@ def process_speech_to_txt(path, lang):
 		language_code=lang,
 		enable_automatic_punctuation=True,
 		enable_word_time_offsets=True,
-		audio_channel_count=2,
+		#audio_channel_count=2,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
 	response = operation.result(timeout=960)
@@ -119,6 +119,7 @@ def generate_transcriptions(speech_txt_response, bin=60):
 
 def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", None)):
 
+
     client = translate.TranslationServiceClient()
 
     location = "global"
@@ -140,6 +141,7 @@ def translate_text(text, lang, project_id=getattr(settings, "GCLOUD_PROJECT", No
         return format(translation.translated_text)
 
 
+#Convert a directory with mp3 to flac
 def mp3_to_flac(dir):
 	for d in os.listdir(dir):
 		if d.endswith('.mp3'):

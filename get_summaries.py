@@ -14,18 +14,25 @@ def process_transcripts(directory, lang='ru-RU'):
 			response = sp.process_speech_to_txt(gc_url, lang)
 			transcript = sp.generate_transcriptions(response)
 			blob.delete()
-			dur = round(len(transcript) / 4)
-			for i in range(0, 4):
-				if i == 0:
-					trans = transcript[i:dur - 1]
-					translations.append(sp.translate_text(''.join(trans), lang))
-				else:
-					trans = transcript[dur*i:(dur*i)+(dur - 1)]
-					translations.append(sp.translate_text(''.join(trans), lang))
-			with open('transcripts/'+aud.replace('.flac', '_translation.txt'), 'w') as f:
-				for trans in translations:
+			#translations.append(translate_transcript(transcript, lang))
+			with open('transcripts/'+aud.replace('.flac', '_transcript.txt'), 'w') as f:
+				for trans in transcript:
 					f.write(trans + "\n")
-			print("transcripts completed")
+	print("transcripts completed")
+
+
+#Provide a directory of transcripts and translate them
+def translate_transcript(transcript, lang):
+	translation=[]
+	dur = round(len(transcript) / 4)
+	for i in range(0, 4):
+		if i == 0:
+			trans = transcript[i:dur - 1]
+			translation.append(sp.translate_text(''.join(trans), lang))
+		else:
+			trans = transcript[dur * i:(dur * i) + (dur - 1)]
+			translation.append(sp.translate_text(''.join(trans), lang))
+	return translation
 
 
 def create_summaries(transcripts_dir):
