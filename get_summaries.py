@@ -8,15 +8,24 @@ import pandas as pd
 def process_transcripts(directory, lang='ru-RU'):
 	for aud in os.listdir(directory):
 		translations = []
+		transcript_out=[]
 		if (directory+aud).endswith('.flac'):
 			bkt = getattr(settings, "BUCKET_NAME", None)
 			gc_url, blob = sp.upload_to_gcs(directory, aud, bkt)
 			response = sp.process_speech_to_txt(gc_url, lang)
 			transcript = sp.generate_transcriptions(response)
 			blob.delete()
+			dur = round(len(transcript) / 4)
+			for i in range(0, 4):
+				if i == 0:
+					trans = transcript[i:dur - 1]
+					transcript_out.append(''.join(trans), lang)
+				else:
+					trans = transcript[dur * i:(dur * i) + (dur - 1)]
+					transcript_out.append(''.join(trans), lang)
 			#translations.append(translate_transcript(transcript, lang))
 			with open('transcripts/'+aud.replace('.flac', '_transcript.txt'), 'w') as f:
-				for trans in transcript:
+				for trans in transcript_out:
 					f.write(trans + "\n")
 	print("transcripts completed")
 
