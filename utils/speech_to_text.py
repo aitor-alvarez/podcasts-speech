@@ -18,7 +18,7 @@ def process_speech_to_txt(path, lang):
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
 		language_code=lang,
 		enable_automatic_punctuation=True,
-		enable_word_time_offsets=True,
+		#enable_word_time_offsets=True,
 		#audio_channel_count=2,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
@@ -50,7 +50,7 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 			print("File was not uploaded. There seems to be a problem with your file.")
 
 
-def generate_transcriptions(speech_txt_response, bin=60):
+def generate_transcriptions(speech_txt_response, bin=10):
 	start=[]
 	end=[]
 	transcriptions=[]
