@@ -18,7 +18,6 @@ def process_transcripts(directory, lang='ru-RU'):
 				alternative = result.alternatives[0]
 				transcript_out.append(alternative.transcript)
 			blob.delete()
-			break
 			#translations.append(translate_transcript(transcript, lang))
 			with open('transcripts/'+aud.replace('.flac', '_transcript.txt'), 'w') as f:
 				for trans in transcript_out:
