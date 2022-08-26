@@ -9,9 +9,9 @@ creds/
 *.sqlite3
 settings.py
 transcripts/
+translation/
 audio/
 .DS_Store
 *.xlsx
 *.csv
-translation/
 *.mp3

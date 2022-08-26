@@ -4,7 +4,6 @@ from google.cloud import translate
 import settings
 import datetime
 import os
-import pandas as pd
 from pydub import AudioSegment
 
 
@@ -17,9 +16,9 @@ def process_speech_to_txt(path, lang):
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
 		language_code=lang,
-		enable_automatic_punctuation=True,
-		#enable_word_time_offsets=True,
-		#audio_channel_count=2,
+		#enable_automatic_punctuation=True,
+		enable_word_time_offsets=True,
+		audio_channel_count=2,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
 	response = operation.result(timeout=960)
@@ -50,7 +49,7 @@ def upload_to_gcs(full_file_path, audio_file, bucket_name):
 			print("File was not uploaded. There seems to be a problem with your file.")
 
 
-def generate_transcriptions(speech_txt_response, bin=10):
+def generate_transcriptions(speech_txt_response, bin=60):
 	start=[]
 	end=[]
 	transcriptions=[]
@@ -146,6 +145,6 @@ def mp3_to_flac(dir):
 	for d in os.listdir(dir):
 		if d.endswith('.mp3'):
 			audio = AudioSegment.from_mp3(dir+d)
-			audio.export(dir+d.replace('.mp3', '.flac'),format = "flac")
+			audio.export(dir+d.replace('.mp3', '.flac'),format = "flac", bitrate="192k")
 			os.remove(dir+d)
 	return None
