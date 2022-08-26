@@ -14,7 +14,7 @@ def process_transcripts(directory, lang='ru-RU'):
 			response = sp.process_speech_to_txt(gc_url, lang)
 			transcript = sp.generate_transcriptions(response)
 			blob.delete()
-			translations.append = translate_transcript(transcript, lang)
+			translations = translate_transcript(transcript, lang)
 			with open('transcripts/'+aud.replace('.flac', '_transcript.txt'), 'w') as f:
 				for trans in transcript:
 					f.write(trans + "\n")
