@@ -10,7 +10,7 @@ from pydub import AudioSegment
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"]= getattr(settings, "GCLOUD_CREDS", None)
 
 
-def process_speech_to_txt(path, lang):
+def process_speech_to_txt(path, lang, channels):
 	client = speech.SpeechClient()
 	audio = speech.RecognitionAudio(path)
 	config = speech.RecognitionConfig(
@@ -18,7 +18,7 @@ def process_speech_to_txt(path, lang):
 		language_code=lang,
 		#enable_automatic_punctuation=True,
 		enable_word_time_offsets=True,
-		audio_channel_count=2,
+		audio_channel_count=channels,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
 	response = operation.result(timeout=960)

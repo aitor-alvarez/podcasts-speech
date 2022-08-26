@@ -3,6 +3,7 @@ from utils import speech_to_text as sp
 import os
 import settings
 import pandas as pd
+from pydub.utils import mediainfo
 
 
 def process_transcripts(directory, lang='ru-RU'):
@@ -10,8 +11,10 @@ def process_transcripts(directory, lang='ru-RU'):
 		translations = []
 		if (directory+aud).endswith('.flac'):
 			bkt = getattr(settings, "BUCKET_NAME", None)
+			audio_data = mediainfo(directory+aud)
+			channels = int(audio_data['channels'])
 			gc_url, blob = sp.upload_to_gcs(directory, aud, bkt)
-			response = sp.process_speech_to_txt(gc_url, lang)
+			response = sp.process_speech_to_txt(gc_url, lang, channels)
 			transcript = sp.generate_transcriptions(response)
 			blob.delete()
 			translations = translate_transcript(transcript, lang)
