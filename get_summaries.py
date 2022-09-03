@@ -4,7 +4,12 @@ import os
 import settings
 import pandas as pd
 from pydub.utils import mediainfo
+from nltk.corpus import stopwords
+import stanza
+from gensim.models import LdaModel
+from gensim.corpora.dictionary import Dictionary
 
+nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma')
 
 def process_transcripts(directory, lang='ru-RU'):
 	for aud in os.listdir(directory):
@@ -80,3 +85,33 @@ def get_txt_summaries(data_file):
 	df['summaries'] = summaries
 	df.to_excel('Podcasts_Translate.xlsx', engine='openpyxl')
 	return None
+
+
+def get_topics(corpus):
+	corpus_dict = Dictionary(corpus)
+	doc = [corpus_dict.doc2bow(t) for t in corpus]
+	lda_model = LdaModel(doc, num_topics=10)
+	print(lda_model.print_topics(num_topics=10, num_words=5))
+
+
+def create_corpus(path):
+	direct = os.listdir(path)
+	corpus=[]
+	for txt_file in direct:
+		if txt_file.endswith('.txt'):
+			txt = open('translation/' + txt_file, 'r')
+			tx = txt.read()
+			corpus.append(get_lemmas(tx))
+	return corpus
+
+
+def get_lemmas(txt):
+	stop_words = set(stopwords.words('english'))
+	sentence = nlp(txt)
+	lemmas = [w.lemma for w in sentence.iter_words() if
+	          w.text not in stop_words and w.text not in '@.,!#$%*:;"' and len(w.text) > 2]
+	return lemmas
+
+
+
+
