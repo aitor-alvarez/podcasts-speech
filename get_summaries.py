@@ -6,8 +6,6 @@ import pandas as pd
 from pydub.utils import mediainfo
 from nltk.corpus import stopwords
 import stanza
-from gensim.models import LdaModel
-from gensim.corpora.dictionary import Dictionary
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma')
 
@@ -87,12 +85,6 @@ def get_txt_summaries(data_file):
 	return None
 
 
-def get_topics(corpus):
-	corpus_dict = Dictionary(corpus)
-	doc = [corpus_dict.doc2bow(t) for t in corpus]
-	lda_model = LdaModel(doc, num_topics=10)
-	print(lda_model.print_topics(num_topics=10, num_words=5))
-
 
 def create_corpus(path):
 	direct = os.listdir(path)
@@ -111,7 +103,3 @@ def get_lemmas(txt):
 	lemmas = [w.lemma for w in sentence.iter_words() if
 	          w.text not in stop_words and w.text not in '@.,!#$%*:;"' and len(w.text) > 2]
 	return lemmas
-
-
-
-
