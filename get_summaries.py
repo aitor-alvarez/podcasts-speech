@@ -6,6 +6,8 @@ import pandas as pd
 from pydub.utils import mediainfo
 from nltk.corpus import stopwords
 import stanza
+from gensim.models import LdaModel
+from gensim.corpora.dictionary import Dictionary
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma')
 
@@ -65,8 +67,8 @@ def get_txt_translations(data_file, lang='ru-RU'):
 		else:
 			title_trans.append('')
 			description_trans.append('')
-	df_out = pd.DataFrame({'title_translation': title_trans, 'description_translation': description_trans, 'web_url': df['ZWEBPAGEURL'],
-	                       'audio_url':df['ZENCLOSUREURL'],'podcast_id':df['ZUUID'],'series_id':df['ZPODCASTUUID']})
+	df_out = pd.DataFrame({'title': df['ZCLEANEDTITLE'], 'title_translation': title_trans, 'description_translation': description_trans, 'web_url': df['ZWEBPAGEURL'],
+	                       'author':df['ZAUTHOR'],'podcast_id':df['ZUUID']})
 	df_out.to_excel('Podcasts_Translate.xlsx', engine='openpyxl')
 	return None
 
@@ -76,14 +78,34 @@ def get_txt_summaries(data_file):
 	df = pd.read_excel(data_file, engine='openpyxl')
 	for i in range(0, len(df)):
 		if not pd.isna(df['description_translation'][i]):
-			suma = summarize_text(df['description_translation'][i])
-			summaries.append(suma[0]['summary_text'])
+			txt_des = get_text(df['podcast_id'][i])
+			if txt_des is not None:
+				suma = summarize_text(df['description_translation'][i]+' '+txt_des[0])
+				summaries.append(suma[0]['summary_text'])
+			else:
+				summaries.append('')
+				continue
 		else:
 			summaries.append('')
 	df['summaries'] = summaries
 	df.to_excel('Podcasts_Translate.xlsx', engine='openpyxl')
 	return None
 
+
+def get_text(file_id):
+	files = os.listdir('translation/')
+	f = file_id+'_translationt.txt'
+	if f in files:
+		lines = open('translation/'+f, 'r').readlines()
+		return lines
+	else:
+		return None
+
+
+def get_topics(corpus):
+	corpus_dict = Dictionary(corpus)
+	doc = [corpus_dict.doc2bow(t) for t in corpus]
+	lda_model = LdaModel(doc, num_topics=10)
 
 
 def create_corpus(path):
