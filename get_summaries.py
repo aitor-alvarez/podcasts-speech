@@ -106,16 +106,20 @@ def get_topics(corpus):
 	corpus_dict = Dictionary(corpus)
 	doc = [corpus_dict.doc2bow(t) for t in corpus]
 	lda_model = LdaModel(doc, num_topics=10)
+	return lda_model
 
 
 def create_corpus(path):
 	direct = os.listdir(path)
+	df = pd.read_excel('Podcasts_Translate.xlsx', engine='openpyxl')
 	corpus=[]
 	for txt_file in direct:
 		if txt_file.endswith('.txt'):
+			file_id = txt_file.replace('_translationt.txt', '')
 			txt = open('translation/' + txt_file, 'r')
 			tx = txt.read()
-			corpus.append(get_lemmas(tx))
+			output = tx+' '+df[df['podcast_id']==file_id]['summaries'].iloc[0]+' '+df[df['podcast_id']==file_id]['description_translation'].iloc[0]
+			corpus.append(get_lemmas(output))
 	return corpus
 
 
