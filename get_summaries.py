@@ -10,6 +10,7 @@ from gensim.models import LdaModel
 from gensim.corpora.dictionary import Dictionary
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma')
+ner = stanza.Pipeline(lang='en', processors='tokenize,ner')
 
 def process_transcripts(directory, lang='ru-RU'):
 	for aud in os.listdir(directory):
@@ -129,3 +130,21 @@ def get_lemmas(txt):
 	lemmas = [w.lemma for w in sentence.iter_words() if
 	          w.text not in stop_words and w.text not in '@.,!#$%*:;"' and len(w.text) > 2]
 	return lemmas
+
+
+def get_entities(path):
+	direct = os.listdir(path)
+	df = pd.read_excel('Podcasts_Translate.xlsx', engine='openpyxl')
+	entities = []
+	for txt_file in direct:
+		if txt_file.endswith('.txt'):
+			file_id = txt_file.replace('_translationt.txt', '')
+			txt = open('translation/' + txt_file, 'r')
+			tx = txt.read()
+			output = tx + ' ' + df[df['podcast_id'] == file_id]['summaries'].iloc[0] + ' ' + \
+			         df[df['podcast_id'] == file_id]['description_translation'].iloc[0]
+			ents = ner(output)
+			e = [ent.text for ent in ents.ents][:6]
+			entities.append(e)
+	df_out = pd.DataFrame({'id': df['podcast_id'], 'entities': entities})
+	df_out.to_excel('Podcasts_Entities.xlsx', engine='openpyxl')
