@@ -21,7 +21,7 @@ def process_speech_to_txt(path, lang, channels):
 		audio_channel_count=channels,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
-	response = operation.result(timeout=960)
+	response = operation.result(timeout=1260)
 	return response
 
 
