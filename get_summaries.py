@@ -151,8 +151,10 @@ def get_speech_density(path, data_file):
 			tx = txt.read().split()
 			duration = df[df['guid'] == file_id]['duration'].iloc[0]
 			words = [t for t in tx if t not in stopwords_ru]
-			density = round(len(words)/(int(duration)/60000000))
-			df.sophistication[df.guid==file_id] = density
+			density = (len(words)/len(tx))
+			speech_rate = round(len(words)/(int(duration)/60000000))
+			speech_density = (0.6*density)+(0.4*speech_rate)
+			df.sophistication[df.guid==file_id] = speech_density
 	df.to_excel('podcasts_latest.xlsx', engine='openpyxl')
 	print("density completed")
 	return None
@@ -170,4 +172,4 @@ def get_summaries(path):
 			summary = summarize_text(output)
 			df.summaries[df.podcast_id==file_id] = summary[0]['summary_text']
 	df.to_excel('Podcasts_Translate.xlsx', engine='openpyxl')
-	print("Entities extracted")
+	print("Entities summaries")
