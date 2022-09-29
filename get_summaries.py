@@ -153,7 +153,7 @@ def get_speech_density(path, data_file):
 			words = [t for t in tx if t not in stopwords_ru]
 			density = (len(words)/len(tx))
 			speech_rate = round(len(words)/(int(duration)/60000000))
-			speech_density = (0.6*density)+(0.4*speech_rate)
+			speech_density = round(0.6*density)+(0.4*speech_rate)
 			df.sophistication[df.guid==file_id] = speech_density
 	df.to_excel('podcasts_latest.xlsx', engine='openpyxl')
 	print("density completed")
