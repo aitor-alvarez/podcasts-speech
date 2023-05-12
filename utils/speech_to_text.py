@@ -16,8 +16,8 @@ def process_speech_to_txt(path, lang, channels):
 	config = speech.RecognitionConfig(
 		encoding=speech.RecognitionConfig.AudioEncoding.FLAC,
 		language_code=lang,
-		#enable_automatic_punctuation=True,
-		enable_word_time_offsets=True,
+		enable_automatic_punctuation=True,
+		#enable_word_time_offsets=True,
 		audio_channel_count=channels,
 	)
 	operation = client.long_running_recognize(config=config, audio=audio)
@@ -145,6 +145,6 @@ def mp3_to_flac(dir):
 	for d in os.listdir(dir):
 		if d.endswith('.mp3'):
 			audio = AudioSegment.from_mp3(dir+d)
-			audio.export(dir+d.replace('.mp3', '.flac'),format = "flac", bitrate="192k")
+			audio.export(dir+d.replace('.mp3', '.flac'),format = "flac", bitrate="96k")
 			os.remove(dir+d)
 	return None

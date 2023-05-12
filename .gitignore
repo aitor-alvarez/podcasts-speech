@@ -11,6 +11,7 @@ settings.py
 transcripts/
 translation/
 audio/
+creds.py
 .DS_Store
 *.xlsx
 *.csv

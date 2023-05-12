@@ -4,35 +4,35 @@ import os
 import settings
 import pandas as pd
 from pydub.utils import mediainfo
-from nltk.corpus import stopwords
 import stanza
+from nltk.corpus import stopwords
 from gensim.models import LdaModel
 from gensim.corpora.dictionary import Dictionary
 
 nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma')
 ner = stanza.Pipeline(lang='en', processors='tokenize,ner')
-stopwords = stopwords.words('english')
+stopw = stopwords.words('english')
 stopwords_ru = stopwords.words('russian')
 
 
 def process_transcripts(directory, lang='ru-RU'):
 	for aud in os.listdir(directory):
-		print(aud)
 		if (directory+aud).endswith('.flac'):
 			bkt = getattr(settings, "BUCKET_NAME", None)
 			audio_data = mediainfo(directory+aud)
 			channels = int(audio_data['channels'])
 			gc_url, blob = sp.upload_to_gcs(directory, aud, bkt)
 			response = sp.process_speech_to_txt(gc_url, lang, channels)
-			transcript = sp.generate_transcriptions(response)
+			#transcript = sp.generate_transcriptions(response)
+			transcript = [res.alternatives[0].transcript for res in response.results ]
 			blob.delete()
-			translations = translate_transcript(transcript, lang)
-			with open('transcripts/'+aud.replace('.flac', '_transcript.txt'), 'w') as f:
+			with open(directory+aud.replace('.flac', '_transcript.txt'), 'w') as f:
 				for trans in transcript:
 					f.write(trans + "\n")
-			with open('./translation/'+aud.replace('.flac', '_translationt.txt'), 'w') as t:
-				for transl in translations:
-					t.write(transl + "\n")
+			#translations = translate_transcript(transcript, lang)
+			#with open(directory+aud.replace('.flac', '_translationt.txt'), 'w') as t:
+			#	for transl in translations:
+			#		t.write(transl + "\n")
 	print("transcripts completed")
 
 
@@ -113,7 +113,7 @@ def create_corpus(path, data_file):
 
 
 def get_lemmas(txt):
-	stop_words = set(stopwords.words('english'))
+	stop_words = set(stopw)
 	sentence = nlp(txt)
 	lemmas = [w.lemma for w in sentence.iter_words() if
 	          w.text not in stop_words and w.text not in '@.,!#$%*:;"' and len(w.text) > 2]
@@ -134,7 +134,7 @@ def get_entities(path):
 			         df[df['podcast_id'] == file_id]['description_translation'].iloc[0]
 			ids.append(file_id)
 			ents = ner(output)
-			e = [ent.text for ent in ents.ents][:12]
+			e = [ent.text for ent in ents.ents][:22]
 			entities.append(e)
 	df_out = pd.DataFrame({'id': ids, 'entities': entities})
 	df_out.to_excel('Podcasts_Entities.xlsx', engine='openpyxl')
@@ -153,7 +153,7 @@ def get_speech_density(path, data_file):
 			words = [t for t in tx if t not in stopwords_ru]
 			density = (len(words)/len(tx))
 			speech_rate = round(len(words)/(int(duration)/60000000))
-			speech_density = round(0.6*density)+(0.4*speech_rate)
+			speech_density = round((0.6*density)+(0.4*speech_rate))
 			df.sophistication[df.guid==file_id] = speech_density
 	df.to_excel('podcasts_latest.xlsx', engine='openpyxl')
 	print("density completed")
@@ -172,4 +172,4 @@ def get_summaries(path):
 			summary = summarize_text(output)
 			df.summaries[df.podcast_id==file_id] = summary[0]['summary_text']
 	df.to_excel('Podcasts_Translate.xlsx', engine='openpyxl')
-	print("Entities summaries")
+	print("Completed summaries")
